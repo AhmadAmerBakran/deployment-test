@@ -1,5 +1,5 @@
 ﻿on:
-  push:
+  push: 
     branches:
       - master
   workflow_dispatch:
@@ -8,35 +8,16 @@ jobs:
   build:
     runs-on: ubuntu-22.04
     steps:
-      - name: Checkout repository
-        uses: actions/checkout@v4
-
-      - name: Setup .NET
-        uses: actions/setup-dotnet@v4
+      - uses: actions/checkout@v4
+      - uses: actions/setup-dotnet@v4
         with:
           dotnet-version: '8.0.x'
 
-      - name: Set up environment variables
-        run: |
-          echo "PROJECT_FILE=Api/Api.csproj" >> $GITHUB_ENV
-          echo "PROJECT_NAME=Api" >> $GITHUB_ENV
-
-      - name: Restore dependencies
-        run: dotnet restore ${{ env.PROJECT_FILE }}
-
-      - name: Build and publish API
-        run: dotnet publish ${{ env.PROJECT_FILE }} -c Release -o Api/publish
-
-      - name: Set Heroku buildpack
-        run: heroku buildpacks:set https://github.com/jincod/dotnetcore-buildpack -a ${{ secrets.HEROKU_APP_NAME }}
-        env:
-          HEROKU_API_KEY: ${{ secrets.HEROKU_API_KEY }}
-
-      - name: Deploy to Heroku
-        uses: AkhileshNS/heroku-deploy@v3.13.15
+      - run: cd api && dotnet publish -c Release -o publish
+      - uses: AkhileshNS/heroku-deploy@v3.13.15
         with:
           heroku_api_key: ${{ secrets.HEROKU_API_KEY }}
           heroku_app_name: ${{ secrets.HEROKU_APP_NAME }}
           heroku_email: ${{ secrets.HEROKU_EMAIL }}
           usedocker: false
-          appdir: "Api/publish"
+          appdir: "api" 
