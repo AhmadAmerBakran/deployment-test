@@ -1,0 +1,21 @@
+﻿-- Create the schema if it doesn't exist
+CREATE SCHEMA IF NOT EXISTS car_log;
+
+-- Create the users table if it doesn't exist
+CREATE TABLE IF NOT EXISTS car_log.users (
+    id UUID PRIMARY KEY,
+    nickname VARCHAR(50) NOT NULL
+);
+
+-- Create the car_notifications table if it doesn't exist
+CREATE TABLE IF NOT EXISTS car_log.car_notifications (
+    user_id UUID NOT NULL,
+    from_topic VARCHAR(100),
+    to_topic VARCHAR(100),
+    message TEXT NOT NULL,
+    message_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    FOREIGN KEY (user_id) REFERENCES car_log.users(id) ON DELETE CASCADE
+);
+
+-- Add an index to the user_id column in car_notifications for better performance
+CREATE INDEX IF NOT EXISTS idx_user_id ON car_log.car_notifications(user_id);
