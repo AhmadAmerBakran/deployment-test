@@ -14,18 +14,23 @@ jobs:
       - name: Setup .NET
         uses: actions/setup-dotnet@v4
         with:
-          dotnet-version: '8.0.101'
+          dotnet-version: '8.0.x'
+
+      - name: Set up environment variables
+        run: |
+          echo "PROJECT_FILE=Api/Api.csproj" >> $GITHUB_ENV
+          echo "PROJECT_NAME=Api" >> $GITHUB_ENV
 
       - name: Restore dependencies
-        run: dotnet restore Api/Api.csproj
+        run: dotnet restore ${{ env.PROJECT_FILE }}
 
       - name: Build and publish API
-        run: dotnet publish Api/Api.csproj -c Release -o Api/publish
+        run: dotnet publish ${{ env.PROJECT_FILE }} -c Release -o Api/publish
 
-      #- name: Set Heroku buildpack
-       # run: heroku buildpacks:set https://github.com/jincod/dotnetcore-buildpack#8.0.101 -a ${{ secrets.HEROKU_APP_NAME }}
-       # env:
-         # HEROKU_API_KEY: ${{ secrets.HEROKU_API_KEY }}
+      - name: Set Heroku buildpack
+        run: heroku buildpacks:set https://github.com/jincod/dotnetcore-buildpack -a ${{ secrets.HEROKU_APP_NAME }}
+        env:
+          HEROKU_API_KEY: ${{ secrets.HEROKU_API_KEY }}
 
       - name: Deploy to Heroku
         uses: AkhileshNS/heroku-deploy@v3.13.15
