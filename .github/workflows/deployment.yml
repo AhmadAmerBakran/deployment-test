@@ -23,7 +23,7 @@ jobs:
         run: dotnet publish Api/Api.csproj -c Release -o Api/publish
 
       - name: Set Heroku buildpack
-        run: heroku buildpacks:set jincod/dotnetcore -a ${{ secrets.HEROKU_APP_NAME }}
+        run: heroku buildpacks:set https://github.com/jincod/dotnetcore-buildpack -a ${{ secrets.HEROKU_APP_NAME }}
         env:
           HEROKU_API_KEY: ${{ secrets.HEROKU_API_KEY }}
 
